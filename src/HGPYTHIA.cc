@@ -302,8 +302,12 @@ void glauberPythia(const int RNGSeedOffset = 0,
   TH1F* wH    = new TH1F("wH",     "woundedness ", 100, -0.5, 99.5);
 
   // open a file for an event tree 
-  TFile hfile(outputName.c_str(),"RECREATE","glauber tree");
-  hfile.SetCompressionLevel(5);
+  TFile *hfile = TFile::Open(outputName.c_str(),"RECREATE");
+  if (!hfile) {
+    std::cout << "Error opening file " << outputName << std::endl;
+    exit(1);
+  }
+  hfile->SetCompressionLevel(5);
   typedef struct 
   {
     Int_t mpi[20]; //no longer stored in tree
@@ -543,7 +547,7 @@ void glauberPythia(const int RNGSeedOffset = 0,
       }
     }
 
-    if(iev%10 == 0) printf("%5d %5d %13.3f %6d\n", iev, ncol, b, multP);
+    if(iev%10 == 0) printf("HGPYTHIA: %5d %5d %13.3f %6d\n", iev, ncol, b, multP);
 
     //event generation is done, below is some bookkeeping histograms
 
@@ -685,6 +689,7 @@ void glauberPythia(const int RNGSeedOffset = 0,
     tree->Print();
   }
       
+  hfile->cd();
   hNpartVsB->Write();
   hNcollVsB->Write();
   hNhardVsB->Write();
@@ -696,10 +701,10 @@ void glauberPythia(const int RNGSeedOffset = 0,
   hPtVsB->Write();
   hNhcratVsB->Write();
   hNhcratVsN->Write();
-  hfile.Write();
   hPtVsMPIpp->Write();
   hMultVsMPIpp->Write();
-  hfile.Close();
+  tree->Write();
+  hfile->Close();
 
   swatch.Stop();
   swatch.Print();
@@ -745,20 +750,50 @@ Int_t EvalMult(Pythia * pythia, TClonesArray &arr, Double_t etamin1, Double_t et
     return mult;
 }
 
-int main(int argc, const char* argv[]){
-
-  if(argc != 4)
-  {
-    std::cout << "Usage: HGPythia <nEvents> <jobNumber> <outputName>" << std::endl;
+int main(int argc, const char* argv[])
+{
+  if (argc<3) {
+    std::cout << "Usage: HGPythia <nEvents> <outputName> <energy> <A1> <A2> <maxb>" << std::endl;
     return 1;
   }  
 
+  int RNGoffset = 0;
+  if (gSystem->Getenv("RNGoffset")) 
+    RNGoffset = std::atoi(gSystem->Getenv("RNGoffset"));
+
   int nEvents = std::atoi(argv[1]); 
-  int RNGoffset = std::atoi(argv[2]); 
-  std::string outputName = argv[3];
+  std::string outputName = argv[2];
+  double energy = std::atof(argv[3]);
+  if (energy==0)
+    energy=5000;
+  int A1 = std::atof(argv[4]);
+  if (A1==0)
+    A1=208;
+  int A2 = std::atof(argv[5]);
+  if (A2==0)
+    A2=208;
 
-  glauberPythia(RNGoffset, outputName, nEvents);//PbPb (default)
-  //glauberPythia( RNGoffset,outputName, nEvents, 5020, 1 , -1 , 57, 1, 1, 0 , 5);  //pp settings
+  Float_t maxb=20;
+  if ((A1==1)||(A2==1))
+    maxb=10;
+  if ((A1==1)&&(A2==1))
+    maxb=5;
 
-  return 1;
+  if (argc==7)
+    maxb = std::atof(argv[6]);
+  
+  //maxb=0;
+  std::cout << "Parameters: " << std::endl;
+  std::cout << "RNGoffset: " << RNGoffset << std::endl;
+  std::cout << "output: " << outputName << std::endl;
+  std::cout << "nevents: " << nEvents << std::endl;
+  std::cout << "energy: " << energy << std::endl;
+  std::cout << "A1: " << A1 << std::endl;
+  std::cout << "A2: " << A2 << std::endl;
+  std::cout << "maxb: " << maxb << std::endl;
+
+  sleep(2);
+  glauberPythia(RNGoffset, outputName, nEvents, energy, 1, -1, 57, A1, A2, 0, maxb);
+  return 0;
 }
+
