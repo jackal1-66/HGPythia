@@ -125,14 +125,17 @@ void glauberPythia(const int RNGSeedOffset = 0,
     f->SetParameters(5.36,0.59,0.18,0);
   }
   else if (A==40)
-    rwsF[0] =  new TF1("wsAr", "1.*TMath::Pi()*x^2/(1+exp((x-3.53)/0.542))", 0., 20.);
-  else if (A==16) {
-    rwsF[0] =  new TF1("wsO", "x*x*(1+[2]*(x/[0])**2)/(1+exp((x-[0])/[1]))",0, 20.);
+    rwsF[0] =  new TF1("wsAr", "1.*TMath::Pi()*x^2/(1+exp((x-3.53)/0.542))", 0., 15.);
+  else if (A==20) {
+    rwsF[0] =  new TF1("wsNe", "x*x*(1+[2]*(x/[0])**2)/(1+exp((x-[0])/[1]))",0, 10.);
+    rwsF[0]->SetParameters(2.791,0.698,-0.168);
+  } else if (A==16) {
+    rwsF[0] =  new TF1("wsO", "x*x*(1+[2]*(x/[0])**2)/(1+exp((x-[0])/[1]))",0, 10.);
     rwsF[0]->SetParameters(2.608,0.513,-0.051);
   } else if (A==6)
-    rwsF[0] =  new TF1("wsC", "7.208e-4*4.*TMath::Pi()*x^2*(1.-0.149*(x/2.46)**2)/(1+exp((x-2.46)/0.522))", 0., 20.);
+    rwsF[0] =  new TF1("wsC", "7.208e-4*4.*TMath::Pi()*x^2*(1.-0.149*(x/2.46)**2)/(1+exp((x-2.46)/0.522))", 0., 10.);
   else if (A==3)
-    rwsF[0] =  new TF1("wsHe", "7.208e-4*4.*TMath::Pi()*x^2*(1.+0.517*(x/0.964)**2)/(1+exp((x-0.964)/0.322))", 0., 20.);
+    rwsF[0] =  new TF1("wsHe", "7.208e-4*4.*TMath::Pi()*x^2*(1.+0.517*(x/0.964)**2)/(1+exp((x-0.964)/0.322))", 0., 10.);
   else 
     rwsF[0] = new TF1("prot","x*x*exp(-x/0.234)",0,5);
 
