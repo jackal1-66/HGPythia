@@ -660,8 +660,8 @@ void glauberPythia(const int RNGSeedOffset = 0,
       hNcollVsB->Fill(ncol,b);
       hNhardVsB->Fill(njetT,b);
       hNhardVsNcoll->Fill(njetT,ncol);
-      hNhcratVsB->Fill(b,njetT/ncol);
-      hNhcratVsN->Fill(ncol,njetT/ncol);
+      hNhcratVsB->Fill(b,Float_t(njetT)/ncol);
+      hNhcratVsN->Fill(ncol,Float_t(njetT)/ncol);
       hNcollVsMult->Fill(ncol,vsym);
       hNhardVsMult->Fill(njetT,vsym);
       hNtracksVsMult->Fill(Nch,vsym);

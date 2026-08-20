@@ -6,7 +6,7 @@ CXX=g++
 
 MKDIR_BIN=mkdir -p $(PWD)/bin
 
-PLIB=../pythia8315/
+PLIB=../pythia8317/
 SETPYT=export PYTHIA8DATA=${PLIB}/share/Pythia8/xmldoc
 
 
@@ -16,7 +16,7 @@ mkdirBin:
 	$(MKDIR_BIN)
 setpyt:
 	$(SETPYT)
-bin/HGPYTHIA.exe: src/HGPYTHIA.cc ../pythia8315/lib/libpythia8.a
+bin/HGPYTHIA.exe: src/HGPYTHIA.cc ${PLIB}/lib/libpythia8.a
 	$(CXX) src/HGPYTHIA.cc ${PLIB}/lib/libpythia8.a -o bin/HGPYTHIA.exe  -I${PLIB}/include -pedantic -fPIC -L${PLIB}/lib -Wl,-rpath,${PLIB}/lib -lpythia8 $(ROOT) -I $(PWD)
 
 clean:
